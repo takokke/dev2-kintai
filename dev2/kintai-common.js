@@ -48,31 +48,13 @@ var APPINFO = {
 		},
 		APITOKEN : ''
 	},
-	'スタッフ管理' : {
-		APPID : 150,
-		VIEWID : {
-		},
-		APITOKEN : ''
-	},
-	'拠点マスタ' : {
-		APPID : 152,
-		VIEWID : {
-		},
-		APITOKEN : ''
-	},
 	'作業日報' : {
 		APPID : 154,
 		VIEWID : {
 		},
 		APITOKEN : ''
 	},
-	'作業日報_アルバイト' : {
-		APPID : 148,
-		VIEWID : {
-		},
-		APITOKEN : ''
-	},
-	'出勤種別' : {
+	'営業日マスタ' : {
 		APPID : 153,
 		VIEWID : {
 		},
@@ -344,41 +326,6 @@ function getOrgUser(_params) {
 			resolve(resp);
 		}, function(err) {
 			reject(err);
-		});
-	});
-}
-
-function checkUserInOrg(_params) {
-	return new kintone.Promise(function (resolve, reject) {
-		var params   = _params || {};
-		var orgcode  = params.orgcode || [];
-		var usercode = params.usercode || '';
-
-		if(!orgcode.length) {
-			reject('組織コードが指定されていません。');
-			return false;
-		}
-
-		var promiseArray = [];
-		for(var i = 0; i < orgcode.length; i++) {
-			var orgParams = {
-				code : orgcode[i]
-			}
-			promiseArray.push( getOrgUser(orgParams) );
-		}
-
-		kintone.Promise.all(promiseArray).then(function (results) {
-			var resultObj = {
-				check : false,
-				checkArray : []
-			};
-			for(var i = 0; i < results.length; i++) {
-				var users = results[i].userTitles;
-				var bool = users.some(function(elm) { return elm.user.code == usercode });
-				resultObj.check = resultObj.check || bool;
-				resultObj.checkArray.push(bool);
-			}
-			resolve(resultObj);
 		});
 	});
 }
@@ -656,48 +603,6 @@ function bulkRequest(requests) {
  */
 function mobileCheck(eventType) {
 	return eventType.indexOf('mobile') === -1 ? false :true;
-}
-
-//位置情報対応端末チェック
-function checkGeolocation() {
-	if(!navigator.geolocation) alert( "あなたの端末では、現在位置を取得できません。" );
-	return navigator.geolocation;
-}
-
-//位置情報取得
-function getGeolocation() {
-	return new kintone.Promise(function (resolve, reject) {
-		navigator.geolocation.getCurrentPosition(function(position) {
-			var data = position.coords ;
-			resolve(data);
-		}, function(e) {
-			var errorMessage = {
-				0: "原因不明のエラーが発生しました。",
-				1: "位置情報の取得が許可されていません。\niPhoneの場合：設定⇒プライバシー⇒位置情報サービス⇒Chrome⇒このAppの使用中のみ許可",
-				2: "電波状況などで位置情報が取得できませんでした。",
-				3: "位置情報の取得に時間がかかり過ぎてタイムアウトしました。",
-			} ;
-			alert(errorMessage[e.code]);
-			reject(e);
-		}, {'enableHighAccuracy' : true});
-	});
-}
-
-function distanceLatLng(lat1, lng1, lat2, lng2) {
-	lat1 *= Math.PI / 180;
-	lng1 *= Math.PI / 180;
-	lat2 *= Math.PI / 180;
-	lng2 *= Math.PI / 180;
-	return 6371 * Math.acos(Math.cos(lat1) * Math.cos(lat2) * Math.cos(lng2 - lng1) + Math.sin(lat1) * Math.sin(lat2));
-}
-
-function checkKyoyoDistance(KyoyoDistance, latlng) {
-	var distance = distanceLatLng(latlng.lat1 , latlng.lng1, latlng.lat2, latlng.lng2);
-	if(KyoyoDistance < distance) {
-		return 'NG';
-	} else {
-		return 'OK';
-	}
 }
 
 //START 2021.03.01 【新規】勤怠時間等算出処理　担当：武川（REP）
