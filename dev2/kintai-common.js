@@ -48,7 +48,7 @@ var APPINFO = {
 		},
 		APITOKEN : ''
 	},
-	'作業日報' : {
+	'打刻管理' : {
 		APPID : 154,
 		VIEWID : {
 		},
@@ -59,6 +59,9 @@ var APPINFO = {
 		VIEWID : {
 		},
 		APITOKEN : ''
+	},
+	'社員マスタ': {
+		APPID: 181
 	},
 	'請求書発行': {
 		APPID: 595,
